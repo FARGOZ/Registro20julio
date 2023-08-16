@@ -1,3 +1,27 @@
+<?php
+require 'database.php';
+
+$mensaje = "";
+
+//Proceso de ingreso de datos
+if(!empty($_POST['email']) && !empty($_POST['password'])){
+    $sql = "INSERT INTO estudiantes (email, password) VALUES (:email, :password)";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bindParam(':email', $_POST['email']);
+    $password = password_hash($_POST['password'],PASSWORD_BCRYPT);
+    $stmt->bindParam(':password', $password);
+
+    //validamos registro
+    if($stmt->execute()){
+        $mensaje = "El usuario se ha registrado correctamente";
+    }else{
+        $mensaje = "Lo sentimos no se hay registro en proceso";
+    }
+}
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,10 +33,15 @@
 <body>
     <?php require 'partials/header.php'?>
     
+    <!--Mensaje de guardado-->
+    <?php if(!empty($mensaje)):?>
+        <p><?=$mensaje ?></p>
+    <?php endif; ?>
+
     <h1>Regístrate</h1>
-    <form action="login.php" method="post">
+    <form action="registro.php" method="post">
         <input type="text" class="input" name="email" placeholder="Ingrese su correo">
-        <input type="text" class="input" name="password" placeholder="Ingrese su contraseña">
+        <input type="password" class="input" name="password" placeholder="Ingrese su contraseña">
         <input type="submit" class="boton" value="Enviar">
     </form>
 
